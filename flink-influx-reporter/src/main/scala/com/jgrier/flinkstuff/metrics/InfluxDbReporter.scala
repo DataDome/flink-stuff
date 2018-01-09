@@ -37,6 +37,7 @@ import org.apache.flink.metrics.MetricConfig
 class InfluxDbReporter extends ScheduledDropwizardReporter {
   override def getReporter(metricConfig: MetricConfig): ScheduledReporter = {
 
+    val scheme = metricConfig.getString("scheme", "http")
     val server = metricConfig.getString("server", "localhost")
     val port = metricConfig.getInteger("port", 8086)
     val user = metricConfig.getString("user", "admin")
@@ -44,7 +45,7 @@ class InfluxDbReporter extends ScheduledDropwizardReporter {
     val db = metricConfig.getString("db", "flink")
 
     InfluxdbReporter.forRegistry(registry)
-      .protocol(new HttpInfluxdbProtocol(server, port, user, password, db))
+      .protocol(new HttpInfluxdbProtocol(scheme, server, port, user, password, db))
       .convertRatesTo(TimeUnit.SECONDS)
       .convertDurationsTo(TimeUnit.MILLISECONDS)
       .filter(MetricFilter.ALL)
