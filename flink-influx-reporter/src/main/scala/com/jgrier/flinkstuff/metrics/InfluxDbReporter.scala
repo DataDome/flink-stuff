@@ -37,6 +37,7 @@ import org.apache.flink.metrics.MetricConfig
 class InfluxDbReporter extends ScheduledDropwizardReporter {
   override def getReporter(metricConfig: MetricConfig): ScheduledReporter = {
 
+    val region = metricConfig.getString("region", "unknown")
     val scheme = metricConfig.getString("scheme", "http")
     val server = metricConfig.getString("server", "localhost")
     val port = metricConfig.getInteger("port", 8086)
@@ -51,6 +52,7 @@ class InfluxDbReporter extends ScheduledDropwizardReporter {
       .filter(MetricFilter.ALL)
       .skipIdleMetrics(false)
       .transformer(new CategoriesMetricMeasurementTransformer("host", "process_type", "tm_id", "job_name", "task_name", "subtask_index"))
+      .tag("region", region)
       .build()
   }
 }
